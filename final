@@ -1,0 +1,138 @@
+# File Name : data_processor.py
+# Student Name: Vishwaja Painjane
+# email: painjavv@mail.uc.edu
+# Assignment Number: Assignment07
+# Due Date: 6th March, 2025
+# Course #/Section: IS4010-001
+# Semester/Year: Spring 2025
+# Brief Description of the assignment: This assignment was about processing and analyzing data from a CSV file. I used information from the data.gov website to get the microplastics in water data.
+# Brief Description of what this module does: This module was about working with data, analyzing and processing it.
+# Citations:  Automate the boring stuff with python (https://automatetheboringstuff.com/2e/chapter3/), GeeksforGeeks(https://www.geeksforgeeks.org/python-basics/#python-functions)
+# Anything else that's relevant: N/A
+
+
+#main
+
+from data_processing.data_processor import DataProcessor
+
+if __name__ == "__main__":
+    file_name = 'MicroplasticsData/samples_geocoded.csv'  # Path to your CSV file
+    processor = DataProcessor(file_name)  # Instantiating the DataProcessor class
+
+
+
+
+    ========================================================================================================================================
+
+
+    # File Name : data_processor.py
+# Student Name: Vishwaja Painjane
+# email: painjavv@mail.uc.edu
+# Assignment Number: Assignment07
+# Due Date: 6th March, 2025
+# Course #/Section: IS4010-001
+# Semester/Year: Spring 2025
+# Brief Description of the assignment: This assignment was about processing and analyzing data from a CSV file. I used information from the data.gov website to get the microplastics in water data.
+# Brief Description of what this module does: This module was about working with data, analyzing and processing it.
+# Citations:  Automate the boring stuff with python (https://automatetheboringstuff.com/2e/chapter3/), GeeksforGeeks(https://www.geeksforgeeks.org/python-basics/#python-functions)
+# Anything else that's relevant: N/A
+
+#data_processor
+
+import csv
+
+class DataProcessor:
+    '''
+    A class to process CSV data, analyze values, and extract unique entries.
+    '''
+
+    def __init__(self, file_name):
+        '''
+        Initializes the DataProcessor class by reading the CSV file and performing operations:
+        1. Finds the maximum value in a selected column using brute-force.
+        2. Finds the maximum value in a selected column using list comprehension.
+        3. Extracts unique text values from a selected column.
+        @param
+        file_name String: The path to the CSV file.
+        '''
+        # Reading the CSV data
+        self.csv_data = self.read_CSV_file(file_name)
+        
+        # Printing the max value in a chosen column using brute-force
+        column_index = 6  # Column index for 'Concentration' (adjust if necessary)
+        max_value = self.find_max_value(column_index)
+        if max_value is not None:
+            print(f"Max value (brute-force) in column {column_index}: {max_value}")
+        else:
+            print(f"No valid numeric data found in column {column_index}.")
+        
+        # Printing the max value in a chosen column using list comprehension
+        valid_values = [float(row[column_index]) for row in self.csv_data if self.is_numeric(row[column_index])]
+        if valid_values:
+            max_value_comprehension = max(valid_values)
+            print(f"Max value (list comprehension) in column {column_index}: {max_value_comprehension}")
+        else:
+            print(f"No valid numeric data found in column {column_index} for list comprehension.")
+        
+        # Extracting unique text values from another column
+        text_column_index = 3  # Column index for 'Location' (adjust if necessary)
+        unique_values = list({row[text_column_index] for row in self.csv_data})  # Collect unique values and convert to a list
+        unique_values_list = unique_values[:5]  # Get the first 5 unique values
+        print(f"Number of unique values in column {text_column_index}: {len(unique_values)}")
+        print(f"First 5 unique values: {', '.join(unique_values_list)}")  # Print only 5 values
+
+
+    def read_CSV_file(self, file_name):
+        '''
+        Read from a CSV file into a list
+        @param
+        file_name String: The CSV file to read. It should have a header row, which will be skipped
+        @return list:
+        The list containing all the rows except the header row
+        '''
+        csv_data = []
+        with open(file_name, newline='') as f:
+            reader = csv.reader(f, delimiter=',')
+            header = next(reader)
+            csv_data.append(header)  # We don't want the header row.
+            for row in reader:
+                csv_data.append(row)
+        #print(csv_data)
+        print(type(csv_data))  # It's a list of lists!
+        return csv_data
+
+    def find_max_value(self, column_index):
+        '''
+        Finds the maximum numeric value in a specified column using a brute-force approach.
+        @param
+        column_index int: The index of the column to analyze.
+        @return float:
+        The maximum value in the column. Returns None if no valid numeric data is found.
+        '''
+        max_value = float('-inf')
+        found_valid = False
+        for row in self.csv_data:
+            try:
+                if self.is_numeric(row[column_index]):
+                    value = float(row[column_index])
+                    if value > max_value:
+                        max_value = value
+                    found_valid = True
+            except ValueError:
+                continue
+        return max_value if found_valid else None
+
+    def is_numeric(self, value):
+        '''
+        Check if a value can be converted to a float
+        @param
+        value str: The value to check.
+        @return bool:
+        True if the value can be converted to float, False otherwise.
+        '''
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
